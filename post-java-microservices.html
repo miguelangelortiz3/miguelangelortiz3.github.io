@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Software And Engineering | Blog de Tecnología</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Custom fonts for this template -->
+	<link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+	<link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet'
+		type='text/css'>
+	<link
+		href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+		rel='stylesheet' type='text/css'>
+
+	<!-- Custom styles for this template -->
+	<link href="css/clean-blog.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">Software And Engineering</a>
+			<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+				data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+				aria-label="Toggle navigation">
+				Menu <i class="fas fa-bars"></i>
+			</button>
+
+			<div class="collapse navbar-collapse" id="navbarResponsive">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="index.html">Inicio</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Page Header -->
+	<header class="masthead" style="background-image: url('img/pexels-christina-morillo-1181298.jpg')">
+		<div class="overlay"></div>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-md-10 mx-auto">
+					<div class="site-heading">
+						<h1>Sobre APIs REST y Microservicios en Java</h1>
+						<span class="subheading">
+							Breve teoría y práctica de APIs REST con
+							un ejemplo de implementación de un microservicio en Java usando
+							Restlet
+						</span>
+						<span class="meta">Post por <i>Miguel Ortiz</i> el día 11 de Septiembre de 2021
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Post Content -->
+	<article>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 col-md-10 mx-auto">
+
+					<h2 class="section-heading">Teoría y Práctica de las APIs REST</h2>
+					<p>
+						El día de hoy vamos a hablar de un tema que es de mucho interés dentro de la ingeniería de sistemas: las
+						Interfaces de Programación de Aplicaciones, mejor conocidas como APIs por sus siglas en inglés. Vamos a
+						tratar de manera breve la teoría de lo que son y para lo que sirven junto con un ejemplo práctico de como
+						implementar un diseño muy simple pero ilustrativo de lo que se puede lograr con estas interfaces usando
+						Restlet.
+						Para aprovechar y entender al máximo el contenido de este post lo único que se necesita son conocimientos
+						básicos sobre HTTP (como son peticiones, respuestas, códigos de respuesta) y Java (estructura general de un
+						programa en Java y un poco de lambdas).
+					</p>
+
+					<h2 class="section-heading">La API, el medio de conversación entre los sistemas </h2>
+					<p>
+						El concepto principal en el que nos tenemos que enfocar al hablar de APIs es en el de la comunicación, una
+						API existe como el medio por el cual se van a comunicar dos partes, ya sean sistemas, rutinas, funciones,
+						etc., con el fin de llevar a cabo alguna tarea. Se definen entradas, salidas, obligatoriedades, errores,
+						casos especiales y demás particularidades con el fin de establecer como se va a llevar a cabo la
+						comunicación y lo que se puede esperar como resultado de esta.
+						Dentro del ámbito web el medio de comunicación por excelencia es mediante HTTP/HTTPS, buscando aplicar en
+						medida de lo posible las pautas establecidas por REST. HTTP y HTTPS son protocolos de transferencia de
+						hipertexto, básicamente definen la estructura que deben tener las peticiones y respuestas que se realizan
+						por medio de algún servicio que actúa como servidor para atenderlas. En la imagen siguiente se pueden
+						apreciar ejemplos de una petición y respuesta HTTP:
+					</p>
+
+					<p class="text-center">
+						<img class="img-fluid" src="img/posts/java-microservices/http-req-res-examples.jpg"
+							alt="HTTP Request and Response examples">
+						<span class="caption text-muted">Ejemplo de la dinámica de comunicación de una petición y respuesta en
+							HTTP</span>
+					</p>
+
+					<p>
+						Una petición HTTP está formada por:
+					<ul>
+						<li><b>Un método HTTP:</b> El cual define la operación que se quiere realizar, por ejemplo, se usa GET para
+							solicitar datos, POST para generar nuevos recursos en el servidor destino, PATCH para actualizar recursos
+							de manera parcial o total, etc.</li>
+						<li><b>La ruta del recurso:</b> La ubicación relativa del recurso al cual se quiere llegar</li>
+						<li><b>Cabeceras HTTP:</b> De manera opcional se puede agregar información extra en forma de llave-valor
+							para el
+							servidor.</li>
+						<li><b>Cuerpo de la petición:</b> De manera opcional se puede enviar información al servidor dentro de la
+							sección
+							del cuerpo de la petición.</li>
+					</ul>
+					</p>
+
+					<p>
+						Una respuesta HTTP está formada por:
+					<ul>
+						<li><b>Versión del protocolo:</b> La versión del protocolo HTTP que se está usando.</li>
+						<li><b>Código de estado:</b> Un número que representa el estado de la respuesta, estos se agrupan en rangos
+							específicos como los 100 que son respuestas informativas, los 200 que son respuestas satisfactorias, los
+							300 que son redirecciones, los 400 que son errores del lado del cliente y los 500 que son errores del lado
+							del servidor.</li>
+						<li><b>Mensaje de estado:</b> Breve descripción del código de estado.</li>
+						<li><b>Cabeceras HTTP:</b> De igual manera que en la petición, son datos opcionales que aportan información
+							extra a
+							la respuesta.</li>
+						<li><b>Cuerpo de la respuesta:</b> De igual manera que en la petición, puede regresarse información dentro
+							del
+							cuerpo de la respuesta, esta depende mucho de la información proporcionada en la petición. En este ejemplo
+							en particular por ejemplo se hizo un GET hacia google.com, y a la respuesta se obtiene el HTML de la
+							página principal.</li>
+					</ul>
+					</p>
+
+					<p>
+						Es este tipo de comunicación al que comúnmente se le conoce como Cliente/Servidor ya que en algún lado se
+						encuentra montado un servidor a la escucha de peticiones, las cuales serán procesadas y se le regresará una
+						respuesta al cliente.
+					</p>
+
+					<h2 class="section-heading">Primeros pasos con Microservicios</h2>
+					<p>
+						De manera tradicional, el desarrollo de aplicaciones y servicios web se realiza en una sola pieza, esto
+						quiere decir que todas las partes de la solución viven bajo el mismo ejecutable, por ejemplo si se tiene un
+						sistema de contabilidad el cual accede a una base de datos, por lo general se escogería una tecnología capaz
+						de exponer o montarse sobre un servidor web, en base a esta tecnología se generaría el acceso a la BD, sobre
+						esta capa de persistencia se montarían las reglas de negocio y finalmente se expondrían las operaciones
+						mediante servicios los cuales se consumen desde una capa de vista.
+					</p>
+
+					<p class="text-center">
+						<img class="img-fluid" src="img/posts/java-microservices/monolitic-app-example.jpg"
+							alt="HTTP Request and Response examples">
+						<span class="caption text-muted">Ejemplo de las partes de una aplicación tradicional (monolítica)</span>
+					</p>
+
+					<p>
+						La alternativa para solucionar nuestro problema es romper nuestra aplicación en partes más pequeñas y
+						enforcarnos en la que nos está dando problemas, entonces separamos la funcionalidad de manejo de sesión y la
+						dejamos autocontenida en su propio servicio. Es en este punto es que ya estamos pensando con los famosos
+						microservicios, siguiendo esta analogía para todas las partes del sistema llegamos a aplicaciones
+						autocontenidas que se enfocan a resolver una única tarea de la mejor y más eficiente manera.
+					</p>
+
+					<h2 class="section-heading">Manos a la Obra</h2>
+					<p>
+						Dado este pequeño preámbulo pasemos a desarrollar un pequeño microservicio, las tecnologías que utilizaremos
+						para lograrlo en esta ocasión son Java y Restlet. La estructura que seguirá esta solución es de la siguiente
+						manera:
+					</p>
+
+					<p class="text-center">
+						<img class="img-fluid" src="img/posts/java-microservices/microservice-structure.jpg"
+							alt="HTTP Request and Response examples">
+						<span class="caption text-muted">Estrctura de carpetas y archivos de nuestro microservicio</span>
+					</p>
+
+					<ul>
+						<li style="padding-bottom: .5em;"><b>POM:</b> Definición del manejo del ciclo de vida del proyecto. De aqui
+							lo que resalta es el uso de
+							tan solo 3 dependencias, que son la principal de restlet, su extensión de jackson y gson para serializar
+							los objetos Java en texto JSON.</li>
+						<script src="https://gist.github.com/miguelangelortiz3/37f8062cfd2648fcf871f6ee2354083e.js"></script>
+
+						<li style="padding-bottom: .5em;"><b>Customer:</b> Modelo de la aplicación que sirve para encapsular la
+							información del cliente, para este ejemplo solo contaremos con su identificador, nombre, dirección y
+							número de cuenta.</li>
+						<script src="https://gist.github.com/miguelangelortiz3/9a14b217be4ea8cf9bbc47b42a216d2d.js"></script>
+
+						<li style="padding-bottom: .5em;"><b>CustomersRepository:</b> Capa de repositorio (inteface e
+							implementación) del servicio encargada del manejo de los datos. Las operaciones que disponibilizaremos
+							serán las de listar clientes, encontrar cliente por su identificador, guardar un nuevo registro de cliente
+							y eliminar registro de cliente por su identificador.</li>
+						<script src="https://gist.github.com/miguelangelortiz3/7e908c3351b4fb60b1a5af6c0186c7bf.js"></script>
+						<script src="https://gist.github.com/miguelangelortiz3/4183f17e35e2bff4c6e36e1af661bf17.js"></script>
+
+						<li style="padding-bottom: .5em;"><b>CustomersResource:</b> Operaciones expuestas mediante operaciones http
+							sobre los recursos de la aplicación. Para apegarse a los principios de REST se ocupará <b>GET</b> para
+							listar y obtener registros de clientes, <b>POST</b> para generar nuevos registros y <b>DELETE</b> para
+							remover registros.</li>
+						<script src="https://gist.github.com/miguelangelortiz3/f96f5c63dd07e14eb8a684438620e219.js"></script>
+
+						<li style="padding-bottom: .5em;"><b>RestletServiceApplication:</b> Punto inicial de configuración del
+							servicio.</li>
+						<script src="https://gist.github.com/miguelangelortiz3/ea9d1fc495bbb8baef3908cb9ed831f4.js"></script>
+					</ul>
+
+					<p>
+						Todo el código de este microservicio se ha dispuesto en el repo de github <a
+							href="https://github.com/miguelangelortiz3/java-microservices">java-microservices</a>, para ejecutarlo
+						basta con compilarlo con maven con <b>mvn clean install</b> y dentro de la carpeta target ejecutar el jar
+						con <b>java -jar restlet-service-1.0.0-jar-with-dependencies.jar</b> como se muestra en la siguiente imagen:
+					</p>
+
+					<p class="text-center">
+						<img class="img-fluid" src="img/posts/java-microservices/microservice-executing.jgp"
+							alt="HTTP Request and Response examples">
+						<span class="caption text-muted">Microservicio compilado y ejecutandose</span>
+					</p>
+
+					<p>
+						Si todo se compiló de manera correcta y estando el microservicio arriba, habrá subido montado en el puerto
+						9094, desde el cual ya podemos hacerle peticiones:
+					</p>
+
+					<p class="text-center">
+						<img class="img-fluid" src="img/posts/java-microservices/microservice-request-list.jpg"
+							alt="HTTP Request and Response examples">
+						<span class="caption text-muted">Petición de listado</span>
+					</p>
+
+					<p class="text-center">
+						<img class="img-fluid" src="img/posts/java-microservices/microservice-request-get.jpg"
+							alt="HTTP Request and Response examples">
+						<span class="caption text-muted">Petición de obtención de recurso por identificador</span>
+					</p>
+
+					<p class="text-center">
+						<img class="img-fluid" src="img/posts/java-microservices/microservice-request-post.jpg"
+							alt="HTTP Request and Response examples">
+						<span class="caption text-muted">Petición de creación de recurso</span>
+					</p>
+
+					<p class="text-center">
+						<img class="img-fluid" src="img/posts/java-microservices/microservice-request-delete.jpg"
+							alt="HTTP Request and Response examples">
+						<span class="caption text-muted">Petición de borrado de recurso</span>
+					</p>
+
+					<h2 class="section-heading">En conclusión</h2>
+					<p>
+						Se trató de manera muy breve lo que implica la comunicación mediante el protocolo HTTP y lo que son las
+						aplicaciones y servicios monolíticos y como han ido evolucionando hacia las funcionalidades específicas para
+						convertirse en microservicios, también se implementó un microservicio sencillo con Java y Restlet para
+						ejemplificar todos estos conceptos.
+					</p>
+
+				</div>
+			</div>
+		</div>
+	</article>
+
+	<hr>
+
+	<!-- Footer -->
+	<footer>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-md-10 mx-auto">
+					<p class="copyright text-muted">Copyright &copy; Software And Engineering 2021</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	<!-- Bootstrap core JavaScript -->
+	<script src="vendor/jquery/jquery.min.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Custom scripts for this template -->
+	<script src="js/clean-blog.min.js"></script>
+</body>
+
+</html>
